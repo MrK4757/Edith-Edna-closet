@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Edith & Edna Closet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    body { 
+      margin: 0; 
+      font-family: Poppins, sans-serif; 
+      background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    header { 
+      padding: 1rem 2rem; 
+      background: #fff; 
+      box-shadow: 0 2px 6px rgba(0,0,0,.1); 
+    }
+    
+    header a { 
+      text-decoration: none; 
+      color: #ec4899; 
+      font-weight: 700; 
+      font-size: 1.3rem; 
+    }
+    
+    .container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    
+    .auth-box {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+      max-width: 420px;
+      width: 100%;
+    }
+    
+    .auth-box h1 {
+      color: #ec4899;
+      text-align: center;
+      margin: 0 0 0.5rem 0;
+      font-size: 1.8rem;
+    }
+    
+    .auth-box p {
+      text-align: center;
+      color: #6b7280;
+      margin: 0 0 1.5rem 0;
+    }
+    
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid #f3f4f6;
+    }
+    
+    .tab {
+      flex: 1;
+      padding: 0.75rem;
+      text-align: center;
+      background: none;
+      border: none;
+      color: #6b7280;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .tab.active {
+      color: #ec4899;
+      border-bottom-color: #ec4899;
+    }
+    
+    .form-content {
+      display: none;
+    }
+    
+    .form-content.active {
+      display: block;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: #374151;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+    }
+    
+    .btn-submit {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(90deg, #ec4899, #8b5cf6);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: transform 0.2s;
+    }
+    
+    .btn-submit:hover {
+      transform: translateY(-2px);
+    }
+    
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .message {
+      text-align: center;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      display: none;
+    }
+    
+    .message.success {
+      background: #d1fae5;
+      color: #065f46;
+    }
+    
+    .message.error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .back-link {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+    
+    .back-link a {
+      color: #8b5cf6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-top: 0.5rem;
+    }
+
+    .forgot-password a {
+      color: #8b5cf6;
+      text-decoration: none;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="index.html">← Edith & Edna Closet</a>
+  </header>
+  
+  <div class="container">
+    <div class="auth-box">
+      <h1>Welcome Back!</h1>
+      <p>Login or create an account to continue shopping</p>
+      
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Login</button>
+        <button class="tab" onclick="switchTab('signup')">Sign Up</button>
+        <button class="tab" onclick="switchTab('reset')">Reset Password</button>
+      </div>
+      
+      <!-- Login Form -->
+      <div id="loginForm" class="form-content active">
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" required>
+          </div>
+          <div class="forgot-password">
+            <a onclick="switchTab('reset')">Forgot Password?</a>
+          </div>
+          <button type="submit" class="btn-submit">Login</button>
+        </form>
+      </div>
+      
+      <!-- Signup Form -->
+      <div id="signupForm" class="form-content">
+        <form onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label for="signupName">Full Name</label>
+            <input type="text" id="signupName" required>
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPasswordConfirm">Confirm Password</label>
+            <input type="password" id="signupPasswordConfirm" minlength="6" required>
+          </div>
+          <button type="submit" class="btn-submit">Create Account</button>
+        </form>
+      </div>
+
+      <!-- Password Reset Form -->
+      <div id="resetForm" class="form-content">
+        <form onsubmit="handlePasswordReset(event)">
+          <div class="form-group">
+            <label for="resetEmail">Email Address</label>
+            <input type="email" id="resetEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="resetCode">Reset Code (check your email)</label>
+            <input type="text" id="resetCode" placeholder="Enter 6-digit code">
+          </div>
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <input type="password" id="newPassword" minlength="6" placeholder="Leave blank until you receive code">
+          </div>
+          <div class="form-group">
+            <label for="confirmNewPassword">Confirm New Password</label>
+            <input type="password" id="confirmNewPassword" minlength="6" placeholder="Leave blank until you receive code">
+          </div>
+          <button type="button" class="btn-submit" onclick="sendResetCode()" id="sendCodeBtn">Send Reset Code</button>
+          <button type="submit" class="btn-submit" style="margin-top:0.5rem; display:none;" id="resetPasswordBtn">Reset Password</button>
+        </form>
+      </div>
+      
+      <div id="message" class="message"></div>
+      
+      <div class="back-link">
+        <a href="index.html">Continue as Guest →</a>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Initialize EmailJS - REPLACE WITH YOUR ACTUAL PUBLIC KEY
+    (function(){
+      emailjs.init("wLQzWEV8WXGGBYYj_"); // Add your EmailJS public key in quotes
+    })();
+
+    function switchTab(tab) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      const tabs = document.querySelectorAll('.tab');
+      if (tab === 'login') tabs[0].classList.add('active');
+      else if (tab === 'signup') tabs[1].classList.add('active');
+      else if (tab === 'reset') tabs[2].classList.add('active');
+      
+      document.querySelectorAll('.form-content').forEach(f => f.classList.remove('active'));
+      document.getElementById(tab + 'Form').classList.add('active');
+      
+      hideMessage();
+    }
+    
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = 'message ' + type;
+      msg.style.display = 'block';
+    }
+    
+    function hideMessage() {
+      document.getElementById('message').style.display = 'none';
+    }
+    
+    function handleSignup(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('signupName').value.trim();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const confirmPassword = document.getElementById('signupPasswordConfirm').value;
+      
+      if (!name || !email || !password) {
+        showMessage('Please fill in all fields.', 'error');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showMessage('Password must be at least 6 characters.', 'error');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showMessage('Passwords do not match.', 'error');
+        return;
+      }
+      
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find(u => u.email === email)) {
+        showMessage('Email already registered. Please login.', 'error');
+        return;
+      }
+      
+      users.push({ 
+        name, 
+        email, 
+        password,
+        orders: [],
+        createdAt: new Date().toISOString()
+      });
+      localStorage.setItem('users', JSON.stringify(users));
+      
+      showMessage('Account created successfully! Redirecting...', 'success');
+      
+      setTimeout(() => {
+        localStorage.setItem('currentUser', JSON.stringify({ name, email }));
+        window.location.href = 'index.html';
+      }, 1500);
+    }
+    
+    function handleLogin(e) {
+      e.preventDefault();
+      
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email || !password) {
+        showMessage('Please enter email and password.', 'error');
+        return;
+      }
+      
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email);
+      
+      if (!user) {
+        showMessage('Account not found. Please sign up.', 'error');
+        return;
+      }
+      
+      if (user.password !== password) {
+        showMessage('Incorrect password. Please try again.', 'error');
+        return;
+      }
+      
+      localStorage.setItem('currentUser', JSON.stringify({ name: user.name, email: user.email }));
+      showMessage('Login successful! Redirecting...', 'success');
+      
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+    }
+
+    async function sendResetCode() {
+      const email = document.getElementById('resetEmail').value.trim();
+      
+      if (!email) {
+        showMessage('Please enter your email address.', 'error');
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email);
+
+      if (!user) {
+        showMessage('No account found with this email.', 'error');
+        return;
+      }
+
+      const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      const resetData = {
+        email: email,
+        code: resetCode,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('passwordReset', JSON.stringify(resetData));
+
+      const btn = document.getElementById('sendCodeBtn');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        const templateParams = {
+          to_email: email,
+          reset_code: resetCode,
+          user_name: user.name
+        };
+
+        // REPLACE WITH YOUR ACTUAL SERVICE ID AND TEMPLATE ID
+        const response = await emailjs.send(
+          "service_g05xolk",      // Replace with your Service ID in quotes
+          "template_8tan6z8",     // Replace with your Template ID in quotes
+          templateParams
+        );
+
+        if (response.status === 200) {
+          showMessage('Reset code sent to ' + email + '! Check your inbox.', 'success');
+          document.getElementById('sendCodeBtn').style.display = 'none';
+          document.getElementById('resetPasswordBtn').style.display = 'block';
+        } else {
+          throw new Error('Failed to send email');
+        }
+      } catch (error) {
+        console.error('EmailJS Error:', error);
+        showMessage('Failed to send email: ' + (error.text || error.message || 'Please check your EmailJS configuration'), 'error');
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Code';
+      }
+    }
+
+    function handlePasswordReset(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('resetEmail').value.trim();
+      const code = document.getElementById('resetCode').value.trim();
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+      if (!email || !code || !newPassword || !confirmNewPassword) {
+        showMessage('Please fill in all fields.', 'error');
+        return;
+      }
+
+      if (newPassword.length < 6) {
+        showMessage('Password must be at least 6 characters.', 'error');
+        return;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        showMessage('Passwords do not match.', 'error');
+        return;
+      }
+
+      const resetData = JSON.parse(localStorage.getItem('passwordReset') || 'null');
+      
+      if (!resetData) {
+        showMessage('No reset code found. Please request a new one.', 'error');
+        return;
+      }
+
+      const fifteenMinutes = 15 * 60 * 1000;
+      if (Date.now() - resetData.timestamp > fifteenMinutes) {
+        showMessage('Reset code expired. Please request a new one.', 'error');
+        localStorage.removeItem('passwordReset');
+        return;
+      }
+
+      if (resetData.email !== email || resetData.code !== code) {
+        showMessage('Invalid email or reset code.', 'error');
+        return;
+      }
+
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      const userIndex = users.findIndex(u => u.email === email);
+
+      if (userIndex === -1) {
+        showMessage('User not found.', 'error');
+        return;
+      }
+
+      users[userIndex].password = newPassword;
+      localStorage.setItem('users', JSON.stringify(users));
+      localStorage.removeItem('passwordReset');
+
+      showMessage('Password reset successful! Redirecting to login...', 'success');
+
+      setTimeout(() => {
+        switchTab('login');
+        document.getElementById('loginEmail').value = email;
+        document.getElementById('resetForm').querySelector('form').reset();
+        document.getElementById('sendCodeBtn').style.display = 'block';
+        document.getElementById('resetPasswordBtn').style.display = 'none';
+        document.getElementById('sendCodeBtn').disabled = false;
+        document.getElementById('sendCodeBtn').textContent = 'Send Reset Code';
+      }, 2000);
+    }
+    
+    window.addEventListener('DOMContentLoaded', () => {
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (user) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

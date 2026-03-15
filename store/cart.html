@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Your Cart - Edith & Edna Closet</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    body { font-family: Poppins, sans-serif; margin:0; background:#faf5ff; color:#333; }
+    header { padding:1rem 2rem; background:#fff; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+    header a { text-decoration:none; color:#8b5cf6; font-weight:600; margin:0 0.5rem; }
+    h1 { text-align:center; color:#ec4899; margin:1.6rem 0; }
+
+    .container { max-width:1100px; margin:0 auto 3rem; padding:0 1rem; }
+
+    table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+    thead th { background:#8b5cf6; color:#fff; padding:12px; text-align:center; font-weight:700; }
+    tbody td { padding:12px; text-align:center; border-bottom:1px solid #f1f1f1; }
+    img.prod { width:80px; height:60px; object-fit:cover; border-radius:6px; }
+
+    .remove-btn { background:#ec4899; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    input.qty { width:64px; padding:6px; border-radius:6px; border:1px solid #ddd; text-align:center; }
+
+    .summary, .checkout { margin-top:1.2rem; background:#fff; padding:1rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.06); }
+    .summary p { display:flex; justify-content:space-between; margin:0.6rem 0; font-weight:600; }
+    .summary h2 { color:#ec4899; margin:0 0 0.8rem 0; }
+
+    .checkout h2 { color:#8b5cf6; margin:0 0 1rem 0; text-align:center; }
+    .checkout input, .checkout select, .checkout textarea { width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
+    
+    /* Payment Method Styles */
+    .payment-methods {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .payment-method {
+      flex: 1;
+      min-width: 120px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .payment-method.selected {
+      border-color: #ec4899;
+      background: #fdf2f8;
+    }
+    
+    .payment-method span {
+      display: block;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .mobile-money-details {
+      background: #f9f9f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: none;
+    }
+    
+    .mobile-money-details.show {
+      display: block;
+    }
+    
+    .provider-selector {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+    
+    .provider-option {
+      flex: 1;
+      min-width: 100px;
+      padding: 0.8rem;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .provider-option.selected {
+      border-color: #ec4899;
+      background: #fdf2f8;
+    }
+    
+    .provider-option span {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    
+    .payment-instructions {
+      background: #e8f4fd;
+      padding: 0.8rem;
+      border-radius: 6px;
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    
+    .payment-instructions p {
+      margin: 0.3rem 0;
+    }
+    
+    .payment-instructions strong {
+      color: #ec4899;
+    }
+    
+    .checkout button { 
+      width:100%; 
+      background: linear-gradient(90deg,#ec4899,#8b5cf6); 
+      color:#fff; 
+      padding:12px; 
+      border:none; 
+      border-radius:8px; 
+      font-weight:700; 
+      cursor:pointer; 
+      margin-top: 0.5rem;
+    }
+    
+    .checkout button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .payment-status {
+      margin: 1rem 0;
+      padding: 1rem;
+      border-radius: 6px;
+      display: none;
+    }
+    
+    .payment-status.pending {
+      background: #fff3cd;
+      color: #856404;
+      display: block;
+    }
+    
+    .payment-status.success {
+      background: #d4edda;
+      color: #155724;
+      display: block;
+    }
+    
+    .payment-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      display: block;
+    }
+
+    .empty { text-align:center; padding:2rem 0; color:#666; }
+    .cart-badge { background:#ec4899; color:white; padding:0.2rem 0.6rem; border-radius:50%; font-size:0.8rem; margin-left:6px; }
+    .user-info { color:#ec4899; font-weight:600; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <a href="index.html" style="font-weight:700; font-size:1.05rem; color:#ec4899;">Edith & Edna Closet</a>
+    </div>
+    <nav id="navLinks"></nav>
+  </header>
+
+  <div class="container">
+    <h1>Your Shopping Cart</h1>
+
+    <div id="cartArea">
+      <table id="cartTable" aria-label="Shopping cart table">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <div id="emptyNotice" class="empty" style="display:none;">
+        Your cart is empty. <a href="index.html" style="color:#8b5cf6; font-weight:600;">Continue shopping →</a>
+      </div>
+
+      <div class="summary" id="summaryBlock" style="display:none;">
+        <h2>Order Summary</h2>
+        <p><span>Subtotal:</span><span id="subtotal">GHS 0</span></p>
+        <p style="font-size:1.05rem;"><strong>Total:</strong><strong id="grandTotal">GHS 0</strong></p>
+      </div>
+
+      <div class="checkout" id="checkoutBlock" style="display:none;">
+        <h2>Checkout</h2>
+        
+        <!-- Payment Status Display -->
+        <div id="paymentStatus" class="payment-status"></div>
+        
+        <form id="orderForm" method="POST">
+          <!-- Web3Forms Access Key (for cash on delivery) -->
+          <input type="hidden" name="access_key" value="d7d78a8b-9f4e-49f5-9f79-7134db850ca0">
+          
+          <input type="text" id="name" name="name" placeholder="Your Full Name" required>
+          <input type="email" id="email" name="email" placeholder="Your Email Address" required>
+          <input type="tel" id="contact" name="contact" placeholder="Your Phone Number (e.g., 054XXXXXXX)" required>
+          <textarea name="Address" rows="4" placeholder="Your Delivery Address" required></textarea>
+          
+          <!-- Payment Method Selection -->
+          <div style="margin: 1rem 0;">
+            <label style="font-weight: 600; color: #374151;">Select Payment Method:</label>
+            <div class="payment-methods">
+              <div class="payment-method selected" onclick="selectPaymentMethod('cash')" id="payment-cash">
+                <span>💰 Cash on Delivery</span>
+              </div>
+              <div class="payment-method" onclick="selectPaymentMethod('mobile')" id="payment-mobile">
+                <span>📱 Mobile Money (Paystack)</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Mobile Money Details (hidden by default) -->
+          <div id="mobileMoneyDetails" class="mobile-money-details">
+            <h3 style="color: #ec4899; margin-top: 0;">Mobile Money Payment via Paystack</h3>
+            
+            <div class="payment-instructions">
+              <p><strong>📱 How to pay with Mobile Money:</strong></p>
+              <p>1. Select your network provider below</p>
+              <p>2. Enter the Mobile Money number linked to your account</p>
+              <p>3. Click "Pay with Mobile Money" to proceed</p>
+              <p>4. You'll receive a payment request on your phone</p>
+              <p>5. Enter your PIN to complete the transaction</p>
+              <p><small>✅ Powered by Paystack - Secure and reliable</small></p>
+            </div>
+            
+            <label style="font-weight: 600; color: #374151;">Select Network Provider:</label>
+            <div class="provider-selector">
+              <div class="provider-option selected" onclick="selectProvider('mtn')" id="provider-mtn">
+                <span>📶 MTN</span>
+              </div>
+              <div class="provider-option" onclick="selectProvider('vodafone')" id="provider-vodafone">
+                <span>📶 Vodafone</span>
+              </div>
+              <div class="provider-option" onclick="selectProvider('airteltigo')" id="provider-airteltigo">
+                <span>📶 AirtelTigo</span>
+              </div>
+            </div>
+            
+            <input type="tel" id="momoNumber" name="momoNumber" placeholder="Mobile Money Number (e.g., 024XXXXXXX)" pattern="[0-9]{10}" title="Please enter a valid 10-digit Ghana phone number">
+            <input type="hidden" id="paymentMethod" name="paymentMethod" value="cash">
+            <input type="hidden" id="mobileProvider" name="mobileProvider" value="mtn">
+          </div>
+  
+          <!-- Hidden order details -->
+          <textarea id="orderDetails" name="orderDetails" style="display:none;"></textarea>
+
+          <button type="submit" id="placeOrderBtn">Place Order</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize EmailJS
+    (function(){
+      emailjs.init("wLQzWEV8WXGGBYYj_");
+    })();
+
+    // ============================================
+    // PAYMENT METHOD SELECTION
+    // ============================================
+    let selectedPaymentMethod = 'cash';
+    let selectedProvider = 'mtn';
+    const BACKEND_URL = 'https://edith-edna-closet.onrender.com'; // Your Render backend URL
+
+    function selectPaymentMethod(method) {
+      selectedPaymentMethod = method;
+      document.getElementById('paymentMethod').value = method;
+      
+      // Update UI
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.classList.remove('selected');
+      });
+      document.getElementById(`payment-${method}`).classList.add('selected');
+      
+      // Show/hide mobile money details
+      const mobileDetails = document.getElementById('mobileMoneyDetails');
+      if (method === 'mobile') {
+        mobileDetails.classList.add('show');
+        document.getElementById('momoNumber').setAttribute('required', 'required');
+      } else {
+        mobileDetails.classList.remove('show');
+        document.getElementById('momoNumber').removeAttribute('required');
+      }
+    }
+
+    function selectProvider(provider) {
+      selectedProvider = provider;
+      document.getElementById('mobileProvider').value = provider;
+      
+      // Update UI
+      document.querySelectorAll('.provider-option').forEach(el => {
+        el.classList.remove('selected');
+      });
+      document.getElementById(`provider-${provider}`).classList.add('selected');
+    }
+
+    function validateMobileMoney() {
+      if (selectedPaymentMethod !== 'mobile') return true;
+      
+      const momoNumber = document.getElementById('momoNumber').value.replace(/\s/g, '');
+      const phoneRegex = /^[0-9]{10}$/;
+      
+      if (!phoneRegex.test(momoNumber)) {
+        showPaymentStatus('Please enter a valid 10-digit Ghana phone number (e.g., 024XXXXXXX)', 'error');
+        return false;
+      }
+      
+      // Check if it's a valid Ghana prefix
+      const validPrefixes = ['020', '023', '024', '025', '026', '027', '028', '029', '050', '053', '054', '055', '056', '057', '058', '059'];
+      const prefix = momoNumber.substring(0, 3);
+      
+      if (!validPrefixes.includes(prefix)) {
+        showPaymentStatus('Please enter a valid Ghana phone number prefix', 'error');
+        return false;
+      }
+      
+      return true;
+    }
+
+    function showPaymentStatus(message, type) {
+      const statusEl = document.getElementById('paymentStatus');
+      statusEl.textContent = message;
+      statusEl.className = `payment-status ${type}`;
+    }
+
+    // ============================================
+    // PAYSTACK INTEGRATION WITH RENDER BACKEND
+    // ============================================
+    async function initiatePaystackPayment() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (!cart.length) {
+        alert('Your cart is empty.');
+        return;
+      }
+
+      // Calculate total (convert to pesewas - Paystack uses smallest currency unit)
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const amountInPesewas = Math.round(total * 100); // GHS 10 = 1000 pesewas
+
+      const customerEmail = document.getElementById('email').value;
+      const customerName = document.getElementById('name').value;
+      const customerPhone = document.getElementById('momoNumber').value;
+
+      if (!customerEmail || !customerName) {
+        alert('Please fill in your name and email');
+        return;
+      }
+
+      if (!customerPhone) {
+        alert('Please enter your mobile money number');
+        return;
+      }
+
+      try {
+        showPaymentStatus('Connecting to Paystack...', 'pending');
+
+        // 1. Call your Render backend to initialize transaction
+        const response = await fetch(`${BACKEND_URL}/initialize-payment`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: customerEmail,
+            amount: amountInPesewas,
+            name: customerName,
+            phone: customerPhone,
+            provider: selectedProvider,
+            cart: cart,
+            metadata: {
+              customer_name: customerName,
+              customer_phone: customerPhone,
+              provider: selectedProvider,
+              cart_items: cart.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price,
+                size: item.size || null,
+                color: item.color || null
+              }))
+            }
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.status && data.data.authorization_url) {
+          // 2. Redirect to Paystack checkout page
+          showPaymentStatus('Redirecting to Paystack...', 'success');
+          
+          // Store order info temporarily before redirect
+          sessionStorage.setItem('pendingOrder', JSON.stringify({
+            cart: cart,
+            customerName: customerName,
+            customerEmail: customerEmail,
+            customerPhone: customerPhone,
+            customerAddress: document.querySelector('textarea[name="Address"]').value,
+            total: total,
+            reference: data.data.reference
+          }));
+          
+          // Redirect to Paystack
+          window.location.href = data.data.authorization_url;
+        } else {
+          console.error('Paystack initialization failed:', data);
+          showPaymentStatus('Failed to initialize payment. Please try again.', 'error');
+        }
+      } catch (error) {
+        console.error('Payment initialization failed:', error);
+        showPaymentStatus('Network error. Please check your connection.', 'error');
+      }
+    }
+
+    // ============================================
+    // CASH ON DELIVERY ORDER PROCESSING
+    // ============================================
+    async function processCashOnDelivery() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (!cart.length) return;
+
+      const btn = document.getElementById('placeOrderBtn');
+      const customerName = document.getElementById('name').value;
+      const customerEmail = document.getElementById('email').value;
+      const customerContact = document.getElementById('contact').value;
+      const customerAddress = document.querySelector('textarea[name="Address"]').value;
+
+      // Build order details for Web3Forms
+      let orderText = "ORDER SUMMARY:\n\n";
+      let total = 0;
+
+      cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+
+        orderText += `Product: ${item.name}\n`;
+        if (item.size) orderText += `Size: ${item.size}\n`;
+        if (item.color) orderText += `Color: ${item.color}\n`;
+        orderText += `Price: GHS ${item.price}\n`;
+        orderText += `Quantity: ${item.quantity}\n`;
+        orderText += `Item Total: GHS ${itemTotal}\n`;
+        orderText += `Image: ${window.location.origin}/${item.image}\n`;
+        orderText += "------------------------\n";
+      });
+
+      orderText += `\nTOTAL PRICE: GHS ${total}\n`;
+      orderText += `PAYMENT METHOD: Cash on Delivery\n`;
+      
+      document.getElementById('orderDetails').value = orderText;
+
+      const fd = new FormData(document.getElementById('orderForm'));
+
+      try {
+        // Submit order to Web3Forms
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: fd
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Send confirmation email to customer
+          btn.textContent = 'Sending confirmation...';
+          const emailSent = await sendOrderConfirmationEmail(
+            customerEmail, 
+            customerName, 
+            cart, 
+            total,
+            customerAddress,
+            customerContact
+          );
+
+          // Clear cart
+          localStorage.removeItem('cart');
+          updateCartCount();
+
+          if (emailSent) {
+            alert('Order placed successfully! A confirmation email has been sent to ' + customerEmail);
+          } else {
+            alert('Order placed successfully! However, we couldn\'t send the confirmation email.');
+          }
+          
+          window.location.href = 'index.html';
+        } else {
+          throw new Error('Web3Forms submission failed');
+        }
+      } catch (err) {
+        console.error('COD Error:', err);
+        showPaymentStatus('There was a problem placing your order. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      }
+    }
+
+    // ============================================
+    // EMAIL CONFIRMATION FUNCTION
+    // ============================================
+    async function sendOrderConfirmationEmail(customerEmail, customerName, cart, total, address, contact) {
+      try {
+        // Build order items list as plain text
+        let orderItemsList = '';
+        cart.forEach((item, index) => {
+          const itemTotal = item.price * item.quantity;
+          orderItemsList += `\n${index + 1}. ${item.name}\n`;
+          if (item.size) orderItemsList += `   Size: ${item.size}\n`;
+          if (item.color) orderItemsList += `   Color: ${item.color}\n`;
+          orderItemsList += `   Price: GHS ${item.price.toFixed(2)}\n`;
+          orderItemsList += `   Quantity: ${item.quantity}\n`;
+          orderItemsList += `   Subtotal: GHS ${itemTotal.toFixed(2)}\n`;
+          orderItemsList += `   ------------------------\n`;
+        });
+
+        const templateParams = {
+          to_email: customerEmail,
+          customer_name: customerName,
+          order_items: orderItemsList,
+          total_amount: total.toFixed(2),
+          delivery_address: address,
+          contact_number: contact,
+          payment_method: 'Cash on Delivery',
+          order_date: new Date().toLocaleString()
+        };
+
+        // Send confirmation email
+        const response = await emailjs.send(
+          "service_g05xolk",
+          "template_5vicpfj",
+          templateParams
+        );
+
+        return response.status === 200;
+      } catch (error) {
+        console.error('Failed to send confirmation email:', error);
+        return false;
+      }
+    }
+
+    // ============================================
+    // CART MANAGEMENT FUNCTIONS
+    // ============================================
+    function updateNavbar() {
+      const nav = document.getElementById('navLinks');
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      
+      nav.innerHTML = `
+        <a href="index.html">Home</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="cart.html">Cart <span id="navCartCount" class="cart-badge">0</span></a>
+      `;
+      
+      if (user) {
+        const span = document.createElement('span');
+        span.className = 'user-info';
+        span.style.marginLeft = '12px';
+        span.textContent = 'Welcome, ' + user.name;
+        nav.appendChild(span);
+        
+        const logoutLink = document.createElement('a');
+        logoutLink.href = '#';
+        logoutLink.textContent = 'Logout';
+        logoutLink.style.marginLeft = '0.5rem';
+        logoutLink.onclick = () => {
+          localStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        };
+        nav.appendChild(logoutLink);
+      } else {
+        const a = document.createElement('a');
+        a.href = 'login.html';
+        a.style.marginLeft = '12px';
+        a.textContent = 'Login';
+        nav.appendChild(a);
+      }
+      updateCartCount();
+    }
+
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const tbody = document.querySelector('#cartTable tbody');
+      tbody.innerHTML = '';
+
+      if (!cart.length) {
+        document.getElementById('cartTable').style.display = 'none';
+        document.getElementById('emptyNotice').style.display = 'block';
+        document.getElementById('summaryBlock').style.display = 'none';
+        document.getElementById('checkoutBlock').style.display = 'none';
+        updateCartCount();
+        return;
+      }
+
+      document.getElementById('cartTable').style.display = '';
+      document.getElementById('emptyNotice').style.display = 'none';
+      document.getElementById('summaryBlock').style.display = '';
+      document.getElementById('checkoutBlock').style.display = '';
+
+      let subtotal = 0;
+      cart.forEach((item, index) => {
+        const total = item.price * (item.quantity || 1);
+        subtotal += total;
+
+        const tr = document.createElement('tr');
+        let variantInfo = '';
+        if (item.size) variantInfo += '<br><small>Size: ' + escapeHtml(item.size) + '</small>';
+        if (item.color) variantInfo += '<br><small>Color: ' + escapeHtml(item.color) + '</small>';
+        
+        tr.innerHTML = `
+          <td><img class="prod" src="${item.image}" alt="${escapeHtml(item.name)}"></td>
+          <td>${escapeHtml(item.name)}${variantInfo}</td>
+          <td>GHS ${Number(item.price).toFixed(2)}</td>
+          <td><input class="qty" type="number" min="1" value="${item.quantity || 1}" onchange="updateQuantity(${index}, this.value)"></td>
+          <td>GHS ${Number(total).toFixed(2)}</td>
+          <td><button class="remove-btn" onclick="removeItem(${index})">Remove</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('subtotal').textContent = 'GHS ' + subtotal.toFixed(2);
+      document.getElementById('grandTotal').textContent = 'GHS ' + subtotal.toFixed(2);
+
+      // Prefill name/email if user logged in
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (user) {
+        document.getElementById('name').value = user.name || '';
+        document.getElementById('email').value = user.email || '';
+        
+        // Also prefill phone if available in user data
+        if (user.phone) {
+          document.getElementById('contact').value = user.phone || '';
+        }
+      }
+
+      updateCartCount();
+    }
+
+    function updateQuantity(index, qty) {
+      qty = parseInt(qty) || 1;
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (!cart[index]) return;
+      cart[index].quantity = qty;
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function removeItem(index) {
+      let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      if (!cart[index]) return;
+      cart.splice(index, 1);
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const count = cart.reduce((s, it) => s + (it.quantity || 0), 0);
+      const navCount = document.getElementById('navCartCount');
+      if (navCount) navCount.textContent = count;
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"'`=\/]/g, function (s) {
+        return ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
+          "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+        })[s];
+      });
+    }
+
+    // ============================================
+// CHECK FOR PAYMENT RETURN
+// ============================================
+function checkPaymentReturn() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get('payment');
+    const reference = urlParams.get('ref');
+    
+    if (paymentStatus === 'completed' || paymentStatus === 'success') {
+        // Payment was successful
+        const pendingOrder = sessionStorage.getItem('pendingOrder');
+        
+        if (pendingOrder) {
+            const order = JSON.parse(pendingOrder);
+            
+            // Clear cart and session storage
+            localStorage.removeItem('cart');
+            sessionStorage.removeItem('pendingOrder');
+            updateCartCount();
+            
+            // Show success message
+            alert(`✅ Payment successful! Your order reference is: ${reference}. A confirmation email will be sent shortly.`);
+            
+            // Redirect to home page
+            window.location.href = 'index.html';
+        } else {
+            // No pending order but payment succeeded - still redirect to home
+            window.location.href = 'index.html';
+        }
+    } else if (paymentStatus === 'cancelled') {
+        alert('Payment was cancelled. Please try again.');
+        // Clear the URL parameters
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+}
+
+    // ============================================
+    // MAIN FORM SUBMISSION HANDLER
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function () {
+      updateNavbar();
+      loadCart();
+      checkPaymentReturn();
+      
+      // Initialize payment method
+      selectPaymentMethod('cash');
+      selectProvider('mtn');
+
+      const form = document.getElementById('orderForm');
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (!cart.length) {
+          alert('Your cart is empty.');
+          return;
+        }
+
+        // Validate mobile money if selected
+        if (!validateMobileMoney()) {
+          return;
+        }
+
+        const btn = document.getElementById('placeOrderBtn');
+        btn.disabled = true;
+        
+        const paymentMethod = document.getElementById('paymentMethod').value;
+        
+        if (paymentMethod === 'mobile') {
+          // Use Paystack for mobile money
+          btn.textContent = 'Redirecting to Paystack...';
+          await initiatePaystackPayment();
+          // Note: We don't re-enable the button because we're redirecting
+        } else {
+          // Cash on delivery - use existing Web3Forms flow
+          btn.textContent = 'Processing...';
+          showPaymentStatus('Processing your order...', 'pending');
+          await processCashOnDelivery();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
