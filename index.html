@@ -8,8 +8,8 @@
   <style>
     body { margin:0; font-family:Poppins,sans-serif; background:#faf5ff; color:#333; }
     header.navbar { display:flex; justify-content:space-between; align-items:center; padding:1rem 2rem; background:#fff; position:sticky; top:0; z-index:100; box-shadow:0 2px 6px rgba(0,0,0,.1); }
-    header.navbar .logo { font-size:1.3rem; font-weight:700; color:#ec4899; }
-    header.navbar nav a { margin:0 1rem; text-decoration:none; color:#8b5cf6; font-weight:600; }
+    header.navbar .logo { font-size:1.0rem; font-weight:600; color:#ec4899; }
+    header.navbar nav a { margin:0 .3rem; text-decoration:none; color:#8b5cf6; font-weight:600; }
     .cart-badge { background:#ec4899; color:white; padding:0.2rem 0.6rem; border-radius:50%; font-size:0.8rem; margin-left:0.3rem; }
     .hamburger { display:none; font-size:1.8rem; cursor:pointer; user-select:none; }
     .user-info { color:#ec4899; font-weight:600; margin-left:1rem; }
@@ -17,7 +17,7 @@
       .hamburger { display:block; }
       header.navbar nav { display:none; flex-direction:column; background:white; position:absolute; top:60px; right:0; width:220px; box-shadow:0 2px 6px rgba(0,0,0,.1); padding:0.5rem 0; }
       header.navbar nav.show { display:flex; }
-      header.navbar nav a { margin:0.6rem 1rem; }
+      header.navbar nav a { margin:0.3rem 1rem; }
     }
 
     .hero { position:relative; height:360px; overflow:hidden; }
@@ -32,15 +32,15 @@
       justify-content:center; 
       gap:1rem; 
       flex-wrap:wrap; 
-      padding:1.5rem 0; 
+      padding:1.2rem 0; 
       background:#faf5ff;
       position:sticky;
       top:72px;
       z-index:90;
       box-shadow:0 2px 8px rgba(0,0,0,.05);
     }
-    .filters input { padding:0.6rem 1rem; border:1px solid #ddd; border-radius:6px; width:240px; }
-    .filters button { padding:0.5rem 1rem; border:none; background:#8b5cf6; color:white; border-radius:6px; cursor:pointer; }
+    .filters input { padding:0.4rem 0.8rem; border:1px solid #ddd; border-radius:4px; width:240px; }
+    .filters button { padding:0.3rem 0.8rem; border:none; background:#8b5cf6; color:white; border-radius:4px; cursor:pointer; font-size: 0.8rem; }
 
     .products-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.2rem; padding:0 2rem 2rem 2rem; }
     .product-card { background:white; padding:1rem; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,.08); text-align:center; transition:transform 0.18s ease; }
@@ -49,7 +49,7 @@
     .product-card h3 { margin:0.5rem 0; font-size:1rem; }
     .product-card .price { margin:0.2rem 0 0.8rem 0; color:#1f2937; font-weight:600; font-size:1.1rem; }
     .product-card select { margin:6px 0; padding:6px; border-radius:6px; border:1px solid #ddd; width:100%; }
-    .product-card button { background:linear-gradient(90deg,#ec4899,#8b5cf6); color:white; padding:.48rem 0.8rem; border:none; border-radius:6px; cursor:pointer; width:100%; margin-top:0.5rem; }
+    .product-card button { background:linear-gradient(90deg,#ec4899,#8b5cf6); color:white; padding:.3rem 0.6rem; border:none; border-radius:4px; cursor:pointer; width:100%; margin-top:0.3rem; font-size:0.8rem;}
     .product-card button:disabled { background:#ccc; cursor:not-allowed; }
 
     .color-thumbs { display:flex; justify-content:center; flex-wrap:wrap; margin-bottom:6px; gap:8px; }
@@ -71,7 +71,7 @@
     .contact-section h2 { color:#ec4899; text-align:center; }
     .contact-form { display:flex; flex-direction:column; gap:0.8rem; max-width:520px; margin:0.6rem auto; }
     .contact-form input, .contact-form textarea { padding:0.8rem; border:1px solid #ddd; border-radius:6px; font-size:1rem; }
-    .contact-form button { background:linear-gradient(90deg,#ec4899,#8b5cf6); color:white; padding:0.8rem; border:none; border-radius:6px; cursor:pointer; font-weight:600; width:100%; }
+    .contact-form button { background:linear-gradient(90deg,#ec4899,#8b5cf6); color:white; padding:0.6rem; border:none; border-radius:4px; cursor:pointer; font-weight:600; width:100%; font-size:0.9rem; }
 
     footer { text-align:center; padding:1rem; background:#faf5ff; color:#555; margin-top:1.6rem; font-size:0.95rem; }
 
@@ -133,15 +133,16 @@
   </section>
 
   <footer>
-  <!-- <p>© 2026 Edith & Edna Closet. All rights reserved.</p>
-    <p>Email: edith.ednacloset@gmail.com || Phone: (+233) 540556040 / (+233) 209370803 || Location: Sefwi Wiawso, Western North</p>
-  -->
-    <div class="container flex">
-      <div>© <span id="year"></span> Edith & Edna</div>
-      <div>Email: <a href="mailto:edith.ednacloset@gmail.com">edith.ednacloset@gmail.com</a></div>
-      <div>Location: A/3 Sefwi Wiawso, Western North, Ghana</div>
-      <div>Contact: (+233) 540556040 / (+233) 209370803</div>
+  <div class="container flex">
+    <div>© <span id="year"></span> Edith & Edna Closet</div>
+    <div>Email: <a href="mailto:edith.ednacloset@gmail.com">edith.ednacloset@gmail.com</a></div>
+    <div>Location: A/3 Sefwi Wiawso, Western North, Ghana</div>
+    <div>Contact: (+233) 540556040 / (+233) 209370803</div>
+    <div style="margin-top: 0.8rem;">
+      <a href="shipping-policy.html" style="color: #8b5cf6; text-decoration: none;">📦 Shipping Policy</a> | 
+      <a href="refund-policy.html" style="color: #8b5cf6; text-decoration: none;">🔄 Refund Policy</a>
     </div>
+  </div>
   </footer>
 
   <div id="imageModal" onclick="if(event.target === this) closeModal()">

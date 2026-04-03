@@ -6,25 +6,28 @@
   <title>Your Cart - Edith & Edna Closet</title>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <style>
+    /* Your existing styles remain the same */
     body { font-family: Poppins, sans-serif; margin:0; background:#faf5ff; color:#333; }
-    header { padding:1rem 2rem; background:#fff; display:flex; justify-content:space-between; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+    header { padding:1rem 2rem; background:#fff; display:flex; justify-content:flex-start; align-items:center; box-shadow:0 2px 6px rgba(0,0,0,.08); }
+    header nav {display: flex; align-items: center; margin-left: 2rem;}
     header a { text-decoration:none; color:#8b5cf6; font-weight:600; margin:0 0.5rem; }
+    @media (max-width:768px) {
+      header.navbar nav a { 
+        margin: 0.3rem 0.8rem;
+        padding: 0.3rem 0;
+      }
+    }
     h1 { text-align:center; color:#ec4899; margin:1.6rem 0; }
-
     .container { max-width:1100px; margin:0 auto 3rem; padding:0 1rem; }
-
     table { width:100%; border-collapse:collapse; background:#fff; border-radius:8px; overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,.06); }
     thead th { background:#8b5cf6; color:#fff; padding:12px; text-align:center; font-weight:700; }
     tbody td { padding:12px; text-align:center; border-bottom:1px solid #f1f1f1; }
     img.prod { width:80px; height:60px; object-fit:cover; border-radius:6px; }
-
-    .remove-btn { background:#ec4899; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; }
-    input.qty { width:64px; padding:6px; border-radius:6px; border:1px solid #ddd; text-align:center; }
-
+    .remove-btn { background:#ec4899; color:#fff; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.8rem; }
+    input.qty { width:50px; padding:4px; border-radius:4px; border:1px solid #ddd; text-align:center; font-size:0.85rem; }
     .summary, .checkout { margin-top:1.2rem; background:#fff; padding:1rem; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.06); }
     .summary p { display:flex; justify-content:space-between; margin:0.6rem 0; font-weight:600; }
     .summary h2 { color:#ec4899; margin:0 0 0.8rem 0; }
-
     .checkout h2 { color:#8b5cf6; margin:0 0 1rem 0; text-align:center; }
     .checkout input, .checkout select, .checkout textarea { width:100%; padding:10px; margin:8px 0; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
     
@@ -38,7 +41,7 @@
     
     .payment-method {
       flex: 1;
-      min-width: 120px;
+      min-width: 150px;
       border: 2px solid #ddd;
       border-radius: 8px;
       padding: 1rem;
@@ -119,12 +122,13 @@
       width:100%; 
       background: linear-gradient(90deg,#ec4899,#8b5cf6); 
       color:#fff; 
-      padding:12px; 
+      padding:10px; 
       border:none; 
-      border-radius:8px; 
-      font-weight:700; 
+      border-radius:6px; 
+      font-weight:600; 
       cursor:pointer; 
       margin-top: 0.5rem;
+      font-size:0.95rem;
     }
     
     .checkout button:disabled {
@@ -159,10 +163,53 @@
 
     .empty { text-align:center; padding:2rem 0; color:#666; }
     .cart-badge { background:#ec4899; color:white; padding:0.2rem 0.6rem; border-radius:50%; font-size:0.8rem; margin-left:6px; }
-    .user-info { color:#ec4899; font-weight:600; }
+    .user-info { color:#ec4899; font-weight:600; margin-left: auto;}
+    
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    
+    .loading-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+    }
+    
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #ec4899;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p id="loadingMessage">Processing your payment...</p>
+    </div>
+  </div>
+
   <header>
     <div>
       <a href="index.html" style="font-weight:700; font-size:1.05rem; color:#ec4899;">Edith & Edna Closet</a>
@@ -205,7 +252,6 @@
         <div id="paymentStatus" class="payment-status"></div>
         
         <form id="orderForm" method="POST">
-          <!-- Web3Forms Access Key (for cash on delivery) -->
           <input type="hidden" name="access_key" value="d7d78a8b-9f4e-49f5-9f79-7134db850ca0">
           
           <input type="text" id="name" name="name" placeholder="Your Full Name" required>
@@ -221,14 +267,14 @@
                 <span>💰 Cash on Delivery</span>
               </div>
               <div class="payment-method" onclick="selectPaymentMethod('mobile')" id="payment-mobile">
-                <span>📱 Mobile Money (Paystack)</span>
+                <span>📱 Mobile Money</span>
               </div>
             </div>
           </div>
           
-          <!-- Mobile Money Details (hidden by default) -->
+          <!-- Mobile Money Details -->
           <div id="mobileMoneyDetails" class="mobile-money-details">
-            <h3 style="color: #ec4899; margin-top: 0;">Mobile Money Payment via Paystack</h3>
+            <h3 style="color: #ec4899; margin-top: 0;">Mobile Money Payment</h3>
             
             <div class="payment-instructions">
               <p><strong>📱 How to pay with Mobile Money:</strong></p>
@@ -237,7 +283,6 @@
               <p>3. Click "Pay with Mobile Money" to proceed</p>
               <p>4. You'll receive a payment request on your phone</p>
               <p>5. Enter your PIN to complete the transaction</p>
-              <p><small>✅ Powered by Paystack - Secure and reliable</small></p>
             </div>
             
             <label style="font-weight: 600; color: #374151;">Select Network Provider:</label>
@@ -256,19 +301,41 @@
             <input type="tel" id="momoNumber" name="momoNumber" placeholder="Mobile Money Number (e.g., 024XXXXXXX)" pattern="[0-9]{10}" title="Please enter a valid 10-digit Ghana phone number">
             <input type="hidden" id="paymentMethod" name="paymentMethod" value="cash">
             <input type="hidden" id="mobileProvider" name="mobileProvider" value="mtn">
+            
+            <!-- Mobile Money Pay Button -->
+            <button type="button" id="mobileMoneyPayBtn" class="checkout-btn" style="background: linear-gradient(90deg,#ec4899,#8b5cf6); color:white; padding:12px; border:none; border-radius:8px; font-weight:700; cursor:pointer; width:100%; margin-top:1rem;" onclick="processMobileMoneyPayment()">Pay with Mobile Money</button>
           </div>
   
-          <!-- Hidden order details -->
-          <textarea id="orderDetails" name="orderDetails" style="display:none;"></textarea>
+          <input type="hidden" id="orderDetails" name="orderDetails">
+          
+          <!-- API URL - Change this to your actual backend URL -->
+           <!-- 
+          <input type="hidden" id="apiUrl" value="http://localhost:3000/api">
+          -->
+          <input type="hidden" id="apiUrl" value="https://edith-edna-closet.onrender.com/api">
 
-          <button type="submit" id="placeOrderBtn">Place Order</button>
+          <!-- Cash on Delivery Button -->
+          <button type="submit" id="placeOrderBtn">Place Order (Cash on Delivery)</button>
         </form>
       </div>
     </div>
   </div>
 
+  <footer>
+    <div class="container">
+      <div>© <span id="year"></span> Edith & Edna Closet</div>
+      <div>Email: <a href="mailto:edith.ednacloset@gmail.com">edith.ednacloset@gmail.com</a></div>
+      <div>Location: A/3 Sefwi Wiawso, Western North, Ghana</div>
+      <div>Contact: (+233) 540556040 / (+233) 209370803</div>
+      <div style="margin-top: 0.8rem;">
+        <a href="shipping-policy.html" style="color: #8b5cf6; text-decoration: none;">📦 Shipping Policy</a> | 
+        <a href="refund-policy.html" style="color: #8b5cf6; text-decoration: none;">🔄 Refund Policy</a>
+      </div>
+    </div>
+  </footer>
+
   <script>
-    // Initialize EmailJS
+    // Initialize EmailJS - Consider moving this to environment variable
     (function(){
       emailjs.init("wLQzWEV8WXGGBYYj_");
     })();
@@ -278,26 +345,40 @@
     // ============================================
     let selectedPaymentMethod = 'cash';
     let selectedProvider = 'mtn';
-    const BACKEND_URL = 'https://edith-edna-closet.onrender.com'; // Your Render backend URL
+    let apiUrl = document.getElementById('apiUrl').value;
+
+    function showLoading(message) {
+      document.getElementById('loadingMessage').textContent = message;
+      document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function hideLoading() {
+      document.getElementById('loadingOverlay').style.display = 'none';
+    }
 
     function selectPaymentMethod(method) {
       selectedPaymentMethod = method;
       document.getElementById('paymentMethod').value = method;
       
-      // Update UI
       document.querySelectorAll('.payment-method').forEach(el => {
         el.classList.remove('selected');
       });
       document.getElementById(`payment-${method}`).classList.add('selected');
       
-      // Show/hide mobile money details
       const mobileDetails = document.getElementById('mobileMoneyDetails');
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+      const mobilePayBtn = document.getElementById('mobileMoneyPayBtn');
+      
       if (method === 'mobile') {
         mobileDetails.classList.add('show');
         document.getElementById('momoNumber').setAttribute('required', 'required');
+        placeOrderBtn.style.display = 'none';
+        mobilePayBtn.style.display = 'block';
       } else {
         mobileDetails.classList.remove('show');
         document.getElementById('momoNumber').removeAttribute('required');
+        placeOrderBtn.style.display = 'block';
+        mobilePayBtn.style.display = 'none';
       }
     }
 
@@ -305,7 +386,6 @@
       selectedProvider = provider;
       document.getElementById('mobileProvider').value = provider;
       
-      // Update UI
       document.querySelectorAll('.provider-option').forEach(el => {
         el.classList.remove('selected');
       });
@@ -323,7 +403,6 @@
         return false;
       }
       
-      // Check if it's a valid Ghana prefix
       const validPrefixes = ['020', '023', '024', '025', '026', '027', '028', '029', '050', '053', '054', '055', '056', '057', '058', '059'];
       const prefix = momoNumber.substring(0, 3);
       
@@ -339,93 +418,163 @@
       const statusEl = document.getElementById('paymentStatus');
       statusEl.textContent = message;
       statusEl.className = `payment-status ${type}`;
+      
+      // Auto-hide after 5 seconds for non-pending messages
+      if (type !== 'pending') {
+        setTimeout(() => {
+          if (statusEl.className === `payment-status ${type}`) {
+            statusEl.style.display = 'none';
+          }
+        }, 5000);
+      }
     }
 
     // ============================================
-    // PAYSTACK INTEGRATION WITH RENDER BACKEND
+    // MOBILE MONEY PAYMENT WITH PAYSTACK
     // ============================================
-    async function initiatePaystackPayment() {
+    async function processMobileMoneyPayment() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
       if (!cart.length) {
         alert('Your cart is empty.');
         return;
       }
 
-      // Calculate total (convert to pesewas - Paystack uses smallest currency unit)
+      if (!validateMobileMoney()) {
+        return;
+      }
+
+      const customerName = document.getElementById('name').value.trim();
+      const customerEmail = document.getElementById('email').value.trim();
+      const customerContact = document.getElementById('contact').value.trim();
+      const customerAddress = document.querySelector('textarea[name="Address"]').value.trim();
+      const momoNumber = document.getElementById('momoNumber').value.trim();
+      const provider = selectedProvider;
+
+      if (!customerName || !customerEmail || !customerContact || !customerAddress) {
+        alert('Please fill in all your details first.');
+        return;
+      }
+
+      // Calculate total
       const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const amountInPesewas = Math.round(total * 100); // GHS 10 = 1000 pesewas
 
-      const customerEmail = document.getElementById('email').value;
-      const customerName = document.getElementById('name').value;
-      const customerPhone = document.getElementById('momoNumber').value;
-
-      if (!customerEmail || !customerName) {
-        alert('Please fill in your name and email');
-        return;
-      }
-
-      if (!customerPhone) {
-        alert('Please enter your mobile money number');
-        return;
-      }
+      const btn = document.getElementById('mobileMoneyPayBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+      
+      showLoading('Initializing mobile money payment...');
+      showPaymentStatus('Initializing your mobile money payment...', 'pending');
 
       try {
-        showPaymentStatus('Connecting to Paystack...', 'pending');
-
-        // 1. Call your Render backend to initialize transaction
-        const response = await fetch(`${BACKEND_URL}/initialize-payment`, {
+        // 1. Initialize payment with backend
+        const initResponse = await fetch(`${apiUrl}/initialize-payment`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({
             email: customerEmail,
-            amount: amountInPesewas,
             name: customerName,
-            phone: customerPhone,
-            provider: selectedProvider,
+            amount: total,
+            phoneNumber: momoNumber,
+            provider: provider,
             cart: cart,
             metadata: {
-              customer_name: customerName,
-              customer_phone: customerPhone,
-              provider: selectedProvider,
-              cart_items: cart.map(item => ({
-                name: item.name,
-                quantity: item.quantity,
-                price: item.price,
-                size: item.size || null,
-                color: item.color || null
-              }))
+              address: customerAddress,
+              contact: customerContact
             }
           })
         });
 
-        const data = await response.json();
+        const initData = await initResponse.json();
 
-        if (data.status && data.data.authorization_url) {
-          // 2. Redirect to Paystack checkout page
-          showPaymentStatus('Redirecting to Paystack...', 'success');
-          
-          // Store order info temporarily before redirect
-          sessionStorage.setItem('pendingOrder', JSON.stringify({
-            cart: cart,
-            customerName: customerName,
-            customerEmail: customerEmail,
-            customerPhone: customerPhone,
-            customerAddress: document.querySelector('textarea[name="Address"]').value,
-            total: total,
-            reference: data.data.reference
-          }));
-          
-          // Redirect to Paystack
-          window.location.href = data.data.authorization_url;
-        } else {
-          console.error('Paystack initialization failed:', data);
-          showPaymentStatus('Failed to initialize payment. Please try again.', 'error');
+        if (!initData.success) {
+          throw new Error(initData.message || 'Payment initialization failed');
         }
-      } catch (error) {
-        console.error('Payment initialization failed:', error);
-        showPaymentStatus('Network error. Please check your connection.', 'error');
+
+        showLoading('Redirecting to payment page...');
+        
+        // 2. Redirect to Paystack payment page
+        window.location.href = initData.data.authorization_url;
+        
+        // Store order details in sessionStorage for callback
+        sessionStorage.setItem('pendingOrder', JSON.stringify({
+          cart: cart,
+          customerName: customerName,
+          customerEmail: customerEmail,
+          customerContact: customerContact,
+          customerAddress: customerAddress,
+          momoNumber: momoNumber,
+          provider: provider,
+          total: total,
+          reference: initData.data.reference
+        }));
+
+      } catch (err) {
+        console.error('Mobile Money Error:', err);
+        showPaymentStatus(err.message || 'There was a problem processing your order. Please try again.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Pay with Mobile Money';
+        hideLoading();
+      }
+    }
+
+    // Check payment status on page load (for returning from Paystack)
+    async function checkPaymentStatus() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const reference = urlParams.get('reference');
+      const trxref = urlParams.get('trxref');
+      
+      const paymentRef = reference || trxref;
+      
+      if (paymentRef) {
+        showLoading('Verifying your payment...');
+        
+        try {
+          const verifyResponse = await fetch(`${apiUrl}/verify-payment/${paymentRef}`);
+          const verifyData = await verifyResponse.json();
+          
+          if (verifyData.success && verifyData.data.status === 'success') {
+            // Payment successful
+            const pendingOrder = sessionStorage.getItem('pendingOrder');
+            if (pendingOrder) {
+              const order = JSON.parse(pendingOrder);
+              
+              // Send order confirmation
+              await sendOrderConfirmationEmail(
+                order.customerEmail,
+                order.customerName,
+                order.cart,
+                order.total,
+                order.customerAddress,
+                order.customerContact,
+                `Mobile Money (${order.provider})`,
+                order.momoNumber
+              );
+              
+              // Clear cart
+              localStorage.removeItem('cart');
+              sessionStorage.removeItem('pendingOrder');
+              updateCartCount();
+              
+              showPaymentStatus('✅ Payment successful! Your order has been confirmed.', 'success');
+              
+              setTimeout(() => {
+                window.location.href = 'index.html';
+              }, 3000);
+            }
+          } else {
+            showPaymentStatus('Payment verification failed. Please contact support.', 'error');
+            hideLoading();
+          }
+        } catch (err) {
+          console.error('Verification error:', err);
+          showPaymentStatus('Failed to verify payment. Please contact support.', 'error');
+          hideLoading();
+        }
+        
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
 
@@ -434,16 +583,14 @@
     // ============================================
     async function processCashOnDelivery() {
       const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-      if (!cart.length) return;
+      if (!cart.length) return false;
 
-      const btn = document.getElementById('placeOrderBtn');
       const customerName = document.getElementById('name').value;
       const customerEmail = document.getElementById('email').value;
       const customerContact = document.getElementById('contact').value;
       const customerAddress = document.querySelector('textarea[name="Address"]').value;
 
-      // Build order details for Web3Forms
-      let orderText = "ORDER SUMMARY:\n\n";
+      let orderText = "CASH ON DELIVERY ORDER SUMMARY:\n\n";
       let total = 0;
 
       cart.forEach(item => {
@@ -468,7 +615,6 @@
       const fd = new FormData(document.getElementById('orderForm'));
 
       try {
-        // Submit order to Web3Forms
         const res = await fetch('https://api.web3forms.com/submit', {
           method: 'POST',
           body: fd
@@ -477,18 +623,16 @@
         const data = await res.json();
 
         if (data.success) {
-          // Send confirmation email to customer
-          btn.textContent = 'Sending confirmation...';
           const emailSent = await sendOrderConfirmationEmail(
             customerEmail, 
             customerName, 
             cart, 
             total,
             customerAddress,
-            customerContact
+            customerContact,
+            'Cash on Delivery'
           );
 
-          // Clear cart
           localStorage.removeItem('cart');
           updateCartCount();
 
@@ -499,23 +643,22 @@
           }
           
           window.location.href = 'index.html';
+          return true;
         } else {
           throw new Error('Web3Forms submission failed');
         }
       } catch (err) {
         console.error('COD Error:', err);
         showPaymentStatus('There was a problem placing your order. Please try again.', 'error');
-        btn.disabled = false;
-        btn.textContent = 'Place Order';
+        return false;
       }
     }
 
     // ============================================
     // EMAIL CONFIRMATION FUNCTION
     // ============================================
-    async function sendOrderConfirmationEmail(customerEmail, customerName, cart, total, address, contact) {
+    async function sendOrderConfirmationEmail(customerEmail, customerName, cart, total, address, contact, paymentMethod, momoNumber = '') {
       try {
-        // Build order items list as plain text
         let orderItemsList = '';
         cart.forEach((item, index) => {
           const itemTotal = item.price * item.quantity;
@@ -535,11 +678,11 @@
           total_amount: total.toFixed(2),
           delivery_address: address,
           contact_number: contact,
-          payment_method: 'Cash on Delivery',
+          payment_method: paymentMethod,
+          mobile_money_number: momoNumber || 'N/A',
           order_date: new Date().toLocaleString()
         };
 
-        // Send confirmation email
         const response = await emailjs.send(
           "service_g05xolk",
           "template_5vicpfj",
@@ -635,13 +778,10 @@
       document.getElementById('subtotal').textContent = 'GHS ' + subtotal.toFixed(2);
       document.getElementById('grandTotal').textContent = 'GHS ' + subtotal.toFixed(2);
 
-      // Prefill name/email if user logged in
       const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
       if (user) {
         document.getElementById('name').value = user.name || '';
         document.getElementById('email').value = user.email || '';
-        
-        // Also prefill phone if available in user data
         if (user.phone) {
           document.getElementById('contact').value = user.phone || '';
         }
@@ -685,52 +825,17 @@
     }
 
     // ============================================
-// CHECK FOR PAYMENT RETURN
-// ============================================
-function checkPaymentReturn() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentStatus = urlParams.get('payment');
-    const reference = urlParams.get('ref');
-    
-    if (paymentStatus === 'completed' || paymentStatus === 'success') {
-        // Payment was successful
-        const pendingOrder = sessionStorage.getItem('pendingOrder');
-        
-        if (pendingOrder) {
-            const order = JSON.parse(pendingOrder);
-            
-            // Clear cart and session storage
-            localStorage.removeItem('cart');
-            sessionStorage.removeItem('pendingOrder');
-            updateCartCount();
-            
-            // Show success message
-            alert(`✅ Payment successful! Your order reference is: ${reference}. A confirmation email will be sent shortly.`);
-            
-            // Redirect to home page
-            window.location.href = 'index.html';
-        } else {
-            // No pending order but payment succeeded - still redirect to home
-            window.location.href = 'index.html';
-        }
-    } else if (paymentStatus === 'cancelled') {
-        alert('Payment was cancelled. Please try again.');
-        // Clear the URL parameters
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-}
-
-    // ============================================
     // MAIN FORM SUBMISSION HANDLER
     // ============================================
     document.addEventListener('DOMContentLoaded', function () {
       updateNavbar();
       loadCart();
-      checkPaymentReturn();
       
-      // Initialize payment method
       selectPaymentMethod('cash');
       selectProvider('mtn');
+      
+      // Check for payment callback
+      checkPaymentStatus();
 
       const form = document.getElementById('orderForm');
       form.addEventListener('submit', async function (e) {
@@ -742,29 +847,20 @@ function checkPaymentReturn() {
           return;
         }
 
-        // Validate mobile money if selected
-        if (!validateMobileMoney()) {
-          return;
-        }
-
         const btn = document.getElementById('placeOrderBtn');
         btn.disabled = true;
+        btn.textContent = 'Processing...';
         
-        const paymentMethod = document.getElementById('paymentMethod').value;
+        showPaymentStatus('Processing your cash on delivery order...', 'pending');
         
-        if (paymentMethod === 'mobile') {
-          // Use Paystack for mobile money
-          btn.textContent = 'Redirecting to Paystack...';
-          await initiatePaystackPayment();
-          // Note: We don't re-enable the button because we're redirecting
-        } else {
-          // Cash on delivery - use existing Web3Forms flow
-          btn.textContent = 'Processing...';
-          showPaymentStatus('Processing your order...', 'pending');
-          await processCashOnDelivery();
-        }
+        await processCashOnDelivery();
+        
+        btn.disabled = false;
+        btn.textContent = 'Place Order (Cash on Delivery)';
       });
     });
+    
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>

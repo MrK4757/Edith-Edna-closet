@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shipping Policy - Edith & Edna Closet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #faf5ff;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    /* Header Styles */
+    header {
+      padding: 1rem 2rem;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .logo a {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #ec4899;
+      text-decoration: none;
+    }
+    
+    nav a {
+      text-decoration: none;
+      color: #8b5cf6;
+      font-weight: 600;
+      margin: 0 0.5rem;
+    }
+    
+    .cart-badge {
+      background: #ec4899;
+      color: white;
+      padding: 0.2rem 0.6rem;
+      border-radius: 50%;
+      font-size: 0.8rem;
+      margin-left: 6px;
+    }
+    
+    .user-info {
+      color: #ec4899;
+      font-weight: 600;
+      margin-left: 1rem;
+    }
+    
+    /* Main Content */
+    .policy-container {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    
+    .policy-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .policy-header h1 {
+      color: #ec4899;
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .policy-header p {
+      color: #6b7280;
+      font-size: 1rem;
+    }
+    
+    .last-updated {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 0.85rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #f3e8ff;
+    }
+    
+    .policy-section {
+      background: white;
+      border-radius: 12px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      transition: transform 0.2s;
+    }
+    
+    .policy-section:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .policy-section h2 {
+      color: #8b5cf6;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .policy-section h3 {
+      color: #ec4899;
+      font-size: 1.1rem;
+      margin: 1rem 0 0.5rem 0;
+    }
+    
+    .policy-section p {
+      margin-bottom: 0.8rem;
+      color: #4b5563;
+    }
+    
+    .policy-section ul, .policy-section ol {
+      margin: 0.8rem 0 0.8rem 1.5rem;
+      color: #4b5563;
+    }
+    
+    .policy-section li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .highlight-box {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      padding: 1.2rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 4px solid #f59e0b;
+    }
+    
+    .info-box {
+      background: #f3e8ff;
+      padding: 1.2rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      border-left: 4px solid #8b5cf6;
+    }
+    
+    .contact-info {
+      background: #fff;
+      border: 2px solid #f3e8ff;
+      padding: 1.2rem;
+      border-radius: 8px;
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .contact-info p {
+      margin-bottom: 0.5rem;
+    }
+    
+    .contact-info strong {
+      color: #ec4899;
+    }
+    
+    /* Table Styles */
+    .delivery-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+    
+    .delivery-table th,
+    .delivery-table td {
+      border: 1px solid #e5e7eb;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    
+    .delivery-table th {
+      background: #f3e8ff;
+      color: #8b5cf6;
+      font-weight: 600;
+    }
+    
+    .delivery-table tr:hover {
+      background: #faf5ff;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background: #fff;
+      margin-top: 3rem;
+      color: #6b7280;
+      border-top: 1px solid #f3e8ff;
+    }
+    
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .policy-section {
+        padding: 1.2rem;
+      }
+      
+      .policy-section h2 {
+        font-size: 1.2rem;
+      }
+      
+      .delivery-table {
+        font-size: 0.85rem;
+      }
+      
+      .delivery-table th,
+      .delivery-table td {
+        padding: 0.5rem;
+      }
+    }
+    
+    /* Print Styles */
+    @media print {
+      header, nav, footer, .contact-info {
+        display: none;
+      }
+      
+      .policy-section {
+        box-shadow: none;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">
+      <a href="index.html">✨ Edith & Edna Closet</a>
+    </div>
+    <nav id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="reviews.html">Reviews</a>
+      <a href="cart.html">Cart <span id="navCartCount" class="cart-badge">0</span></a>
+      <a href="shipping-policy.html">Shipping</a>
+      <a href="refund-policy.html">Refunds</a>
+    </nav>
+  </header>
+
+  <div class="policy-container">
+    <div class="policy-header">
+      <h1>📦 Shipping Policy</h1>
+      <p>How we deliver your favorite fashion items to your doorstep</p>
+    </div>
+    
+    <div class="last-updated">
+      Last Updated: January 1, 2026
+    </div>
+
+    <div class="policy-section">
+      <h2>🚚 Delivery Areas</h2>
+      <p>Edith & Edna Closet currently ships to all regions within <strong>Ghana</strong>. We are working on expanding to other West African countries soon.</p>
+      
+      <div class="highlight-box">
+        <strong>📍 Current Delivery Zones:</strong><br/>
+        • Greater Accra Region<br/>
+        • Ashanti Region (Kumasi metropolitan area)<br/>
+        • Western North Region (Sefwi Wiawso and surrounding areas)<br/>
+        • Western Region (Takoradi, Sekondi)<br/>
+        • Central Region (Cape Coast)<br/>
+        • Eastern Region (Koforidua)<br/>
+        • All other regions via partner courier services
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <h2>⏱️ Processing Time</h2>
+      <p><strong>Order processing time:</strong> 1-3 business days (Monday to Friday, excluding public holidays)</p>
+      <p>During this time, we verify your order, check product availability, package your items, and prepare them for shipment.</p>
+      
+      <div class="info-box">
+        <strong>⚠️ Note:</strong> Orders placed on weekends or public holidays will be processed on the next business day.
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <h2>🚛 Delivery Time & Rates</h2>
+      <p>Delivery times vary by location. We partner with reliable courier services, including:</p>
+      <ul>
+        <li><strong>Red Star Express</strong> - Nationwide delivery</li>
+        <li><strong>DHL Ghana</strong> - Express delivery (Accra & Kumasi)</li>
+        <li><strong>Local dispatch riders</strong> - Same-day delivery in the Sefwi Wiawso area</li>
+      </ul>
+      
+      <table class="delivery-table">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Standard Delivery</th>
+            <th>Express Delivery</th>
+            <th>Cost (GHS)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sefwi Wiawso & Surrounding Areas</td>
+            <td>1-2 business days</td>
+            <td>Same day (order before 12pm)</td>
+            <td>10 - 15 GHS</td>
+          </tr>
+          <tr>
+            <td>Greater Accra / Tema</td>
+            <td>2-4 business days</td>
+            <td>1-2 business days</td>
+            <td>20 - 80 GHS</td>
+          </tr>
+          <tr>
+            <td>Kumasi (Ashanti Region)</td>
+            <td>2-4 business days</td>
+            <td>1-2 business days</td>
+            <td>20 - 60 GHS</td>
+          </tr>
+          <tr>
+            <td>Takoradi / Cape Coast</td>
+            <td>3-5 business days</td>
+            <td>2-3 business days</td>
+            <td>25 - 65 GHS</td>
+          </tr>
+          <tr>
+            <td>Other Regional Capitals</td>
+            <td>4-7 business days</td>
+            <td>3-5 business days</td>
+            <td>30 - 80 GHS</td>
+          </tr>
+          <tr>
+            <td>Rural / Remote Areas</td>
+            <td>7-10 business days</td>
+            <td>Not available</td>
+            <td>40 - 90 GHS</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="highlight-box">
+        <strong>🎉 Free Shipping Offer:</strong> Enjoy FREE standard shipping on orders over GHS 500 within Greater Accra and Kumasi metropolitan areas!
+      </div>
+    </div>
+
+    <div class="policy-section">
+      <h2>📱 Order Tracking</h2>
+      <p>Once your order is shipped, you will receive:</p>
+      <ol>
+        <li><strong>SMS notification</strong> with tracking number and courier details</li>
+        <li><strong>Email confirmation</strong> with tracking link (if email provided)</li>
+        <li><strong>WhatsApp update</strong> for customers who provide a WhatsApp number</li>
+      </ol>
+      <p>You can track your order status by contacting us via WhatsApp at <strong>(+233) 540556040</strong> with your order number.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>📦 Delivery Process</h2>
+      <h3>What to expect:</h3>
+      <ul>
+        <li><strong>Before delivery:</strong> Our courier will call to confirm your availability and delivery time</li>
+        <li><strong>At delivery:</strong> You'll receive a call from the dispatch rider when they arrive</li>
+        <li><strong>For Cash on Delivery:</strong> Please have exact change ready as riders may not carry large amounts of change</li>
+        <li><strong>For Mobile Money:</strong> Ensure you have completed payment before delivery</li>
+      </ul>
+      
+      <h3>Failed Delivery Attempts:</h3>
+      <p>If delivery fails after <strong>two (2) attempts</strong> due to:</p>
+      <ul>
+        <li>Wrong or incomplete address provided</li>
+        <li>Recipient not available at the provided location</li>
+        <li>Phone number unreachable or incorrect</li>
+      </ul>
+      <p>The order will be returned to our warehouse, and you will be contacted to arrange redelivery at an additional fee of <strong>15 GHS</strong>.</p>
+    </div>
+
+    <div class="policy-section">
+      <h2>⚠️ Important Notes</h2>
+      <ul>
+        <li><strong>Address Accuracy:</strong> Please double-check your delivery address before submitting your order. We are not responsible for orders delivered to incorrect addresses provided by customers.</li>
+        <li><strong>Delivery Delays:</strong> While we strive to meet delivery timelines, unforeseen circumstances (weather, traffic, public holidays, courier issues) may cause delays. We will notify you of any significant delays.</li>
+        <li><strong>P.O. Box Addresses:</strong> We cannot deliver to P.O. Box addresses. Please provide a physical address with landmark for easy navigation.</li>
+        <li><strong>Working Hours:</strong> Deliveries are made Monday-Saturday, 9:00 AM - 6:00 PM. Sunday and public holiday deliveries available for express service only (additional fee may apply).</li>
+      </ul>
+    </div>
+
+    <div class="policy-section">
+      <h2>🌍 International Shipping</h2>
+      <p>We currently do not offer international shipping.</p>
+  <!-- <ul>
+        <li>🇨🇮 Côte d'Ivoire (Ivory Coast)</li>
+        <li>🇳🇬 Nigeria</li>
+        <li>🇹🇬 Togo</li>
+        <li>🇧🇫 Burkina Faso</li>
+      </ul>
+      <p>For inquiries about international orders, please contact us directly at <strong>edith.ednacloset@gmail.com</strong>.</p>
+      -->
+    </div>
+
+    <div class="contact-info">
+      <p><strong>📞 Need Help With Your Delivery?</strong></p>
+      <p>Call/WhatsApp: <strong>(+233) 540556040</strong> or <strong>(+233) 209370803</strong></p>
+      <p>Email: <strong>edith.ednacloset@gmail.com</strong></p>
+      <p>Location: <strong>A/3 Sefwi Wiawso, Western North, Ghana</strong></p>
+      <p style="margin-top: 0.8rem;">📅 Customer Service Hours: Monday - Saturday, 9:00 AM - 7:00 PM</p>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 Edith & Edna Closet. All rights reserved.</p>
+    <p style="margin-top: 0.5rem; font-size: 0.85rem;">
+      <a href="shipping-policy.html" style="color: #8b5cf6; text-decoration: none;">Shipping Policy</a> | 
+      <a href="refund-policy.html" style="color: #8b5cf6; text-decoration: none;">Refund Policy</a>
+    </p>
+  </footer>
+
+  <script>
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+      const count = cart.reduce((s, it) => s + (it.quantity || 0), 0);
+      const navCount = document.getElementById('navCartCount');
+      if (navCount) navCount.textContent = count;
+    }
+    
+    function updateNavbar() {
+      const nav = document.getElementById('navLinks');
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      
+      // Keep existing nav items
+      if (user) {
+        const span = document.createElement('span');
+        span.className = 'user-info';
+        span.textContent = 'Welcome, ' + user.name;
+        nav.appendChild(span);
+        
+        const logoutLink = document.createElement('a');
+        logoutLink.href = '#';
+        logoutLink.textContent = 'Logout';
+        logoutLink.style.marginLeft = '0.5rem';
+        logoutLink.onclick = () => {
+          localStorage.removeItem('currentUser');
+          window.location.href = 'index.html';
+        };
+        nav.appendChild(logoutLink);
+      }
+      
+      updateCartCount();
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCartCount();
+      updateNavbar();
+    });
+  </script>
+</body>
+</html>
